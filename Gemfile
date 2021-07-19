@@ -38,6 +38,7 @@ group :development, :test do
   gem 'factory_bot_rails', '~> 6.2'
   gem 'spring-commands-rspec'
   gem 'spring-commands-cucumber'
+  gem 'rails-controller-testing'
 end
 
 group :development do
@@ -54,7 +55,7 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-group :test do 
+group :test do
   gem 'capybara'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'

@@ -4,7 +4,6 @@ end
 Given('there is a public achievement') do
   @achievement = FactoryBot.create(:public_achievement, title: 'I did it')
 end
-
 When('I go to the achievement\'s page') do
   visit(achievement_path(@achievement.id))
 end
