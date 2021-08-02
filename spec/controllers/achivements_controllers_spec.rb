@@ -2,9 +2,7 @@ require 'rails_helper'
 
 describe AchievementsController do
 
-
-  describe 'guest user' do
-
+  shared_examples "public access to achievements" do
     describe 'GET index' do
       it 'renders :index template' do
         get :index
@@ -31,6 +29,11 @@ describe AchievementsController do
         expect(assigns(:achievement)).to eq(achievement)
       end
     end
+  end
+
+  describe 'guest user' do
+
+    it_behaves_like "public access to achievements"
 
     describe 'GET new' do
       it 'redirect to login page' do
@@ -76,11 +79,14 @@ describe AchievementsController do
       sign_in(user)
     end
 
+    it_behaves_like "public access to achievements"
+
     describe 'GET index' do
       it 'renders :index template' do
         get :index
         expect(response).to render_template(:index)
       end
+
       it 'assigns only public achievements to template' do
         public_achievement = FactoryBot.create(:public_achievement)
         private_achievement = FactoryBot.create(:private_achievement)
@@ -175,66 +181,62 @@ describe AchievementsController do
 
     end
 
-    context 'is the owner of the achievement'
-  end
+    context 'is the owner of the achievement' do
+      let(:achievement) { FactoryBot.create(:public_achievement, user: user)}
 
-  ########
+      describe 'GET edit' do
 
-  describe 'GET edit' do
-    let(:achievement) { FactoryBot.create(:public_achievement)}
-    it 'renders :edit template' do
-      get :edit, params: {id: achievement.id}
-      expect(response).to render_template(:edit)
-    end
-    it 'assigns the rrquested achievement to template' do
-      get :edit, params: {id: achievement.id}
-      expect(assigns(:achievement)).to eq(achievement)
-    end
-  end
-
-  describe 'PUT update' do
-    let(:achievement) { FactoryBot.create(:public_achievement)}
-
-    context 'valid data' do
-      let(:valid_data) { FactoryBot.attributes_for(:public_achievement, title: 'New Title')}
-
-      it 'redirects to achievements#show' do
-        put :update, params: { achievement: valid_data, id: achievement.id}
-        expect(response).to redirect_to(achievement)
-      end
-      it 'updates achivement in the database' do
-        put :update, params: { achievement: valid_data, id: achievement.id}
-        achievement.reload
-        expect(achievement.title).to eq('New Title')
-      end
-    end
-
-    context 'invalid data' do
-      let(:invalid_data) { FactoryBot.attributes_for(:public_achievement, title: '', description: 'new')}
-
-      it 'renders :edit template' do
-        put :update, params: { achievement: invalid_data, id: achievement.id}
-        expect(response). to render_template(:edit)
+        it 'renders :edit template' do
+          get :edit, params: {id: achievement.id}
+          expect(response).to render_template(:edit)
+        end
+        it 'assigns the rrquested achievement to template' do
+          get :edit, params: {id: achievement.id}
+          expect(assigns(:achievement)).to eq(achievement)
+        end
       end
 
-      it 'doesn\'t update achivement in the database' do
-        put :update, params: { achievement: invalid_data, id: achievement.id}
-        achievement.reload
-        expect(achievement.description).not_to eq('new')
+      describe 'PUT update' do
+        context 'valid data' do
+          let(:valid_data) { FactoryBot.attributes_for(:public_achievement, title: 'New Title')}
+
+          it 'redirects to achievements#show' do
+            put :update, params: { achievement: valid_data, id: achievement.id}
+            expect(response).to redirect_to(achievement)
+          end
+          it 'updates achivement in the database' do
+            put :update, params: { achievement: valid_data, id: achievement.id}
+            achievement.reload
+            expect(achievement.title).to eq('New Title')
+          end
+        end
+
+        context 'invalid data' do
+          let(:invalid_data) { FactoryBot.attributes_for(:public_achievement, title: '', description: 'new')}
+
+          it 'renders :edit template' do
+            put :update, params: { achievement: invalid_data, id: achievement.id}
+            expect(response). to render_template(:edit)
+          end
+
+          it 'doesn\'t update achivement in the database' do
+            put :update, params: { achievement: invalid_data, id: achievement.id}
+            achievement.reload
+            expect(achievement.description).not_to eq('new')
+          end
+        end
       end
-    end
-  end
 
-  describe 'DELETE destroy' do
-    let(:achievement) {FactoryBot.create(:public_achievement)}
-
-    it 'redirects to achievements#index' do
-      delete :destroy, params: {id: achievement.id}
-      expect(response).to redirect_to(achievements_path)
-    end
-    it 'deletes achievements from database' do
-      delete :destroy, params: {id: achievement.id}
-      expect(Achievement.exists?(achievement.id)).to be_falsy
+      describe 'DELETE destroy' do
+        it 'redirects to achievements#index' do
+          delete :destroy, params: {id: achievement.id}
+          expect(response).to redirect_to(achievements_path)
+        end
+        it 'deletes achievements from database' do
+          delete :destroy, params: {id: achievement.id}
+          expect(Achievement.exists?(achievement.id)).to be_falsy
+        end
+      end
     end
   end
 end

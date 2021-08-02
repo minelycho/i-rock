@@ -36,7 +36,7 @@ class AchievementsController < ApplicationController
   end
 
   def destroy
-    @chievement.destroy
+    @achievement.destroy
     redirect_to achievements_path
   end
 
