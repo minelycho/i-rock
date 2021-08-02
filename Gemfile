@@ -37,6 +37,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'rspec-rails'
   gem 'factory_bot_rails', '~> 6.2'
+  gem 'faker', :git => 'https://github.com/faker-ruby/faker.git'
   gem 'spring-commands-rspec'
   gem 'spring-commands-cucumber'
   gem 'rails-controller-testing'
